@@ -1,25 +1,30 @@
-# cryptozombies- lesson 1
+# CryptoZombies — Solidity Smart Contract Course
 
-This repo is where I'm keeping my work as I go through the CryptoZombies course to learn Solidity and smart contract development. This is Lesson 1: the Zombie Factory.
+Completed all 6 lessons building a zombie battle game on Ethereum. Each lesson layered new Solidity concepts onto a single growing codebase.
 
-## What this is
+## What I built
 
-CryptoZombies teaches Solidity by getting you to build a zombie game on Ethereum one small step at a time. Lesson 1 builds a smart contract that can create a zombie with random DNA and keep a permanent record of every zombie ever made.
+A multi-contract DApp where users create zombies with unique DNA, feed on other contracts (CryptoKitties), battle other players, and trade zombies as ERC721 tokens — with payments, access control, and security hardening throughout.
 
-## What the contract does
+## Key concepts applied
 
-When someone calls it with a name, it turns that name into a random 16-digit DNA number using a hash function, creates a zombie (a name paired with its DNA) and saves it to a list stored on the blockchain, works out the new zombie's id (its position in that list), and then fires an event to announce that a new zombie was born, so a front-end app could listen and display it.
+- **Contract architecture** — inheritance chains, imports, interfaces to interact with external contracts, modifiers for reusable access control
+- **Data structures** — mappings, structs with packed storage (`uint16`/`uint32` for gas savings), dynamic arrays, storage vs memory pointers
+- **ERC721 token standard** — `balanceOf`, `ownerOf`, `transferFrom`, approve pattern, `Transfer`/`Approval` events
+- **Security** — Ownable pattern (OpenZeppelin), SafeMath for overflow protection, visibility review to close public attack surfaces, `require` guards on every external function
+- **Payments** — `payable` functions, `msg.value`, ETH withdrawal with `transfer`, updatable fee structures
+- **On-chain logic** — pseudo-random number generation (`keccak256` + nonce), cooldown timers with block timestamps, if/else battle mechanics with win/loss tracking
 
-## What I learned
+## Contract structure
 
-A lot of this was new to me. Some of the things that finally clicked: how a function is put together (its name, inputs, whether it's public or private, and what it gives back), why you'd keep internal helper functions private, data locations like memory and why some types need them, and how storing a value works — that = means "put the right side into the left side", not "equals" like in maths.
+```
+ZombieFactory (base) → ZombieFeeding → ZombieHelper → ZombieAttack → ZombieOwnership
+         ↑                                                                    ↑
+      Ownable                                                              ERC721
+```
 
-I also got my head around hashing with keccak256 and packing data with abi.encodePacked to make the random DNA, typecasting between number types, how arrays work (push gives you back the new length, so length minus 1 is the position of the item you just added), and what events are for — how a contract announces things to the outside world.
+Each contract inherits from the one before it, adding a layer of functionality.
 
-## The tricky bit
+## What's next
 
-The part that took me longest was the nested code — a function call wrapped inside another wrapped inside a typecast, with all the parentheses. What made it click was building it from the inside out, one layer at a time, and counting the brackets so every open had a close.
-
-## Next
-
-On to Lesson 2.
+Moving to Foundry — building Escrow, PaymentSplitter, and Voting contracts from spec with full test suites.
